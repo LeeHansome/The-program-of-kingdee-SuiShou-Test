@@ -1,4 +1,4 @@
-# Databricks notebook source exported at Thu, 24 Nov 2016 13:21:22 UTC
+# Databricks notebook source exported at Fri, 25 Nov 2016 07:42:06 UTC
 from pyspark.sql.functions import regexp_replace, trim, col, lower,split, explode,desc
 def wordsCount(wordsDF):
   """
@@ -8,7 +8,6 @@ def wordsCount(wordsDF):
       a DataFrame with a column named 'count',which is the count of the words.
   """
   return wordsDF.groupBy('word').count().orderBy(desc('count'))
-wordsCounted = wordsCount(wordsDF)
 
 def processText(column):
   """return a column without punctuation leading and trailing spaces and change to lower case"""
@@ -20,5 +19,5 @@ sentenceDF = sqlContext.read.text(fileName).select(processText(col('value')).ali
 wordsDF = (sentenceDF.select(explode(split('sentence',' ')).alias('word'))).where(r"word!=''")
 wordsCountDF = wordsCount(wordsDF)
 wordsCountDF.show()
-
+wordsCountDF.rdd.saveAsTextFile("file:/G:/text/wordsCount.txt")
 
